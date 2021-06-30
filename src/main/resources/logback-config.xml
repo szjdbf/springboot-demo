@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <define name="HOSTNAME" class="com.zlf.demo.springbootdemo.config.log.HostnamePropertyDefiner"/>
+    <property name="app.name" value="test-demo"/> <!-- APPID -->
+    <property name="log.date" value="%d{yyyy-MM-dd}"/>
+    <property name="log.path" value="/opt/logs/spring"/><!-- boot /opt/logs/tomcat -->
+    <property name="log.file" value="${app.name}"/>
+    <property name="log.hostname" value="${HOSTNAME}"/>
+    <property name="log.live.info.path" value="${log.path}/${log.file}/${log.file}.log"/>
+    <property name="log.live.error.path" value="${log.path}/${log.file}/${log.file}_error_${log.hostname}.log"/>
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.live.info.path}</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${log.file}/${log.file}_${log.hostname}_${log.date}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.zlf.demo.springbootdemo.config.log.BLJsonLayout">
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter"/>
+                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</timestampFormat>
+                <includeMDC>false</includeMDC>
+                <appendLineSeparator>true</appendLineSeparator>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.live.error.path}</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/${log.file}/${log.file}_error_${log.hostname}_${log.date}.log.gz
+            </fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.zlf.demo.springbootdemo.config.log.BLJsonLayout">
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter"/>
+                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</timestampFormat>
+                <includeMDC>false</includeMDC>
+                <appendLineSeparator>true</appendLineSeparator>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="infoAsync" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="fileInfoLog"/>
+    </appender>
+    <appender name="errorAsync" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="fileErrorLog"/>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="infoAsync"/>
+        <appender-ref ref="errorAsync"/>
+    </root>
+</configuration>

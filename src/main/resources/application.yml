@@ -1,0 +1,33 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: springboot-demo
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://129.211.149.176:9000/eureka/
+  instance:
+    instance-id: ${spring.application.name}-${spring.cloud.client.ip-address}:${server.port}
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+#logging:
+#  config: classpath:logback-config.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,shutdown,info
+  endpoint:
+    shutdown:
+      enabled: true
+
