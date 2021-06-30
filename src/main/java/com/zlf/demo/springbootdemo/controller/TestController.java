@@ -32,10 +32,12 @@ public class TestController {
 
     @GetMapping("/test")
     public void test() {
-        String sql = "insert into image_data (accessUrl,resourcePath,customerId) values (" + "'test'" + " ," + "'test'" + "," + 1000 + ")";
+        String sql = "insert into image_data (accessUrl,resourcePath,customerId) values (" + "'test'" + " ," + "'test'" + "," + 1001 + ")";
         System.out.println(sql);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute(sql);
+
+        jdbcTemplate.execute("select * from image_data where customerId = 1001");
     }
 
 }
